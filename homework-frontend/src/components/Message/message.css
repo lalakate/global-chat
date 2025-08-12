@@ -1,0 +1,37 @@
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    border: 1px solid rgb(77, 56, 11);
+    margin-bottom: 10px;
+    width: fit-content;
+    max-width: 500px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.message:hover {
+    cursor: default;
+}
+
+.message-username {
+    font-weight: 600;
+    color: rgb(77, 56, 11);
+}
+
+.message-body {
+    color: rgb(77, 56, 11);
+}
+
+.message-timestamp {
+    font-size: 0.8rem;
+    color: rgba(77, 56, 11, 0.5);
+    align-self: flex-end;
+}
+
+.own-message {
+    justify-self: flex-end;
+}

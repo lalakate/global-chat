@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Bebas';
+    font-style: normal;
+    font-weight: 800;
+    src: url('./fonts/BebasNeue-Regular.ttf') format('typetrue');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: url('./fonts/Montserrat-VariableFont_wght.ttf') format('typetrue');
+}

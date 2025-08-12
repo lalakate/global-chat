@@ -1,0 +1,43 @@
+.header {
+    width: 100%;
+    height: 10vh;
+    background-color: wheat;
+    border-radius: 0 0 5px 5px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 5px 0 5px rgba(77, 56, 11, 0.5);
+}
+
+.header-title {
+    color: rgb(77, 56, 11);
+    font-family: 'Bebas';
+    align-self: center;
+    margin-left: 20px;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.user-container {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-right: 20px;
+}
+
+.user {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.logout-button {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+}
+
+.logout-button:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    background-color: transparent;
+    color: rgb(77, 56, 11);
+}
