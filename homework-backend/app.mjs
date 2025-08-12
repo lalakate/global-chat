@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger.mjs';
 
 export function getPort(port = 3001) {
-    return port;
+    return process.env.PORT || port;
 }
 
 const app = express();
@@ -138,4 +138,5 @@ app.post('/chats', isAuthenticated, addChat);
 
 app.listen(getPort(), () => {
     console.log(`Server started at http://localhost:${getPort()}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
