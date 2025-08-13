@@ -109,10 +109,25 @@ const chatSlice = createSlice({
         state.isSendingMessages = true;
         state.error = null;
       })
-      .addCase(sendMessage.fulfilled, (state, _action) => {
+      .addCase(sendMessage.fulfilled, (state, action) => {
         state.isSendingMessages = false;
-        // НЕ добавляем сообщение локально - ждем обновления с сервера
-        // Это обеспечивает синхронизацию между всеми устройствами
+        
+        // Временно добавляем сообщение для мгновенного feedback'а
+        if (action.payload.chat) {
+          // Проверяем, нет ли уже этого сообщения
+          const exists = state.messages.find(
+            msg =>
+              msg.timestamp === action.payload.chat?.timestamp &&
+              msg.body === action.payload.chat?.body &&
+              msg.username === action.payload.chat?.username
+          );
+          
+          if (!exists) {
+            state.messages.push(action.payload.chat);
+            storage.setChatMessages(state.messages);
+          }
+        }
+        
         state.error = null;
       })
       .addCase(sendMessage.rejected, (state, action) => {

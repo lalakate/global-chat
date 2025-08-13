@@ -8,6 +8,7 @@ export const addChat = (req, res) => {
     const { body } = req.body;
     const { user } = req;
     const newMessage = { 
+        id: Date.now() + Math.random(), // Уникальный ID
         username: user.username, 
         body,
         timestamp: new Date().toISOString()
