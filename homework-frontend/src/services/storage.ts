@@ -28,6 +28,7 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.CHAT_MESSAGES, JSON.stringify(messages));
   }
 
+  // Используется только как fallback для офлайн режима
   getChatMessages(): Message[] {
     const messages = localStorage.getItem(STORAGE_KEYS.CHAT_MESSAGES);
     const parsed: Message[] = messages ? JSON.parse(messages) : [];

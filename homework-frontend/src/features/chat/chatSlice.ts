@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import { storage } from '../../services/storage';
 
 const initialState: ChatState = {
-  messages: storage.getChatMessages(),
+  messages: [], // Начинаем с пустого массива, данные загрузим с сервера
   isLoading: false,
   isInitialLoading: true,
   isSendingMessages: false,
@@ -81,15 +81,14 @@ const chatSlice = createSlice({
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         const { messages, timestamp } = action.payload;
-        const newMessageCount = messages.length;
-        const hasNewMessages = newMessageCount !== state.lastMessageCount;
-
-        // Обновляем сообщения только если есть изменения
-        if (hasNewMessages || state.messages.length === 0) {
-          state.messages = messages;
-          state.lastMessageCount = newMessageCount;
-          state.lastUpdateTime = timestamp;
-        }
+        
+        // Всегда обновляем сообщения с сервера для синхронизации между устройствами
+        state.messages = messages;
+        state.lastMessageCount = messages.length;
+        state.lastUpdateTime = timestamp;
+        
+        // Сохраняем в localStorage для офлайн режима
+        storage.setChatMessages(messages);
 
         state.isLoading = false;
         state.isInitialLoading = false;

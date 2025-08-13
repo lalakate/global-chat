@@ -12,7 +12,15 @@ export const Chat = () => {
 
   useEffect(() => {
     if (isAuthorized && user?.token) {
+      // Загружаем сообщения при входе
       dispatch(fetchMessages(false));
+      
+      // Периодически обновляем сообщения каждые 5 секунд для синхронизации
+      const interval = setInterval(() => {
+        dispatch(fetchMessages(true)); // silent mode чтобы не показывать загрузку
+      }, 5000);
+      
+      return () => clearInterval(interval);
     }
   }, [dispatch, isAuthorized, user?.token]);
 
