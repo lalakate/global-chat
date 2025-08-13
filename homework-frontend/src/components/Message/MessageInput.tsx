@@ -26,9 +26,8 @@ export const MessageInput = () => {
         await dispatch(sendMessage(message)).unwrap();
         setMessage('');
 
-        setTimeout(() => {
-          dispatch(fetchMessages(true));
-        }, 300);
+        // Сразу обновляем сообщения после отправки для получения актуального списка с сервера
+        dispatch(fetchMessages(true));
 
         if (textareaRef.current) {
           textareaRef.current.focus();

@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import { storage } from '../../services/storage';
 
 const initialState: ChatState = {
-  messages: [], // Начинаем с пустого массива, данные загрузим с сервера
+  messages: storage.getChatMessages(), // Загружаем из localStorage как fallback до получения данных с сервера
   isLoading: false,
   isInitialLoading: true,
   isSendingMessages: false,
@@ -109,12 +109,10 @@ const chatSlice = createSlice({
         state.isSendingMessages = true;
         state.error = null;
       })
-      .addCase(sendMessage.fulfilled, (state, action) => {
+      .addCase(sendMessage.fulfilled, (state, _action) => {
         state.isSendingMessages = false;
-        if (action.payload.chat) {
-          state.messages.push(action.payload.chat);
-          storage.setChatMessages(state.messages);
-        }
+        // Не добавляем сообщение локально - дождемся обновления с сервера
+        // Это обеспечит корректную синхронизацию между устройствами
         state.error = null;
       })
       .addCase(sendMessage.rejected, (state, action) => {
