@@ -1,10 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type {
-  ChatState,
-  Message,
-  SendMessageResponse,
-} from '../../types/types';
+import type { ChatState, SendMessageResponse } from '../../types/types';
 import type { RootState } from '../../app/store';
+import { getChats } from '../../services/api';
 import { api } from '../../services/api';
 import { storage } from '../../services/storage';
 
@@ -14,24 +11,36 @@ const initialState: ChatState = {
   isInitialLoading: true,
   isSendingMessages: false,
   error: null,
+  lastMessageCount: 0,
+  lastUpdateTime: 0,
 };
 
-export const fetchMessages = createAsyncThunk<
-  { messages: Message[]; isBackground: boolean },
-  boolean | undefined,
-  { state: RootState }
->('chat/fetchMessages', async (isBackground = false, { getState }) => {
-  const state = getState();
-  const token = state.auth.user?.token;
+export const fetchMessages = createAsyncThunk(
+  'chat/fetchMessages',
+  async (isSilent: boolean = false, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.user?.token;
 
-  if (!token) {
-    throw new Error('User is not authorized');
+      if (!token) {
+        throw new Error('Не авторизован');
+      }
+
+      const response = await getChats(token);
+
+      // Возвращаем данные вместе с флагом silent mode
+      return {
+        messages: response || [],
+        isSilent,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Ошибка загрузки сообщений'
+      );
+    }
   }
-
-  const messages = await api.getChats(token);
-  storage.setChatMessages(messages);
-  return { messages, isBackground };
-});
+);
 
 export const sendMessage = createAsyncThunk<
   SendMessageResponse,
@@ -64,18 +73,34 @@ const chatSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchMessages.pending, (state, action) => {
-        const isBackground = action.meta.arg;
-        if (!isBackground) {
+        const isSilent = action.meta.arg;
+        if (!isSilent) {
           state.isLoading = true;
         }
         state.error = null;
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
+        const { messages, timestamp } = action.payload;
+        const newMessageCount = messages.length;
+        const hasNewMessages = newMessageCount !== state.lastMessageCount;
+
+        // Обновляем сообщения только если есть изменения
+        if (hasNewMessages || state.messages.length === 0) {
+          state.messages = messages;
+          state.lastMessageCount = newMessageCount;
+          state.lastUpdateTime = timestamp;
+        }
+
         state.isLoading = false;
         state.isInitialLoading = false;
-        state.messages = action.payload.messages;
         state.error = null;
       })
+      // .addCase(fetchMessages.fulfilled, (state, action) => {
+      //   state.isLoading = false;
+      //   state.isInitialLoading = false;
+      //   state.messages = action.payload.messages;
+      //   state.error = null;
+      // })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isLoading = false;
         state.isInitialLoading = false;

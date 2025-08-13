@@ -23,6 +23,8 @@ export type ChatState = {
   isInitialLoading: boolean;
   isSendingMessages: boolean;
   error: string | null;
+  lastMessageCount: number; // Добавляем счетчик для отслеживания изменений
+  lastUpdateTime: number;
 };
 
 export type RegisterResponse = {
