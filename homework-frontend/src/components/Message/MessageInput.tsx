@@ -22,12 +22,18 @@ export const MessageInput = () => {
         e.preventDefault();
       }
 
+      if (!message.trim()) {
+        return; // Не отправляем пустые сообщения
+      }
+
       try {
         await dispatch(sendMessage(message)).unwrap();
         setMessage('');
 
-        // Сразу обновляем сообщения после отправки для получения актуального списка с сервера
-        dispatch(fetchMessages(true));
+        // Принудительно обновляем сообщения после отправки
+        setTimeout(() => {
+          dispatch(fetchMessages(false)); // Используем false для видимой загрузки
+        }, 100);
 
         if (textareaRef.current) {
           textareaRef.current.focus();
