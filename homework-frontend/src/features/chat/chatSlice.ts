@@ -81,12 +81,12 @@ const chatSlice = createSlice({
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         const { messages, timestamp } = action.payload;
-        
+
         // Всегда обновляем сообщения с сервера для синхронизации между устройствами
         state.messages = messages;
         state.lastMessageCount = messages.length;
         state.lastUpdateTime = timestamp;
-        
+
         // Сохраняем в localStorage для офлайн режима
         storage.setChatMessages(messages);
 
