@@ -49,16 +49,3 @@
 .message-textarea::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
-
-.sending-indicator {
-  animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}

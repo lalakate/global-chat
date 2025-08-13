@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import { storage } from '../../services/storage';
 
 const initialState: ChatState = {
-  messages: [], // Начинаем с пустого массива, данные загрузим с сервера
+  messages: [], // Начинаем с пустого массива, все данные загружаем с сервера
   isLoading: false,
   isInitialLoading: true,
   isSendingMessages: false,
@@ -82,12 +82,12 @@ const chatSlice = createSlice({
       .addCase(fetchMessages.fulfilled, (state, action) => {
         const { messages, timestamp } = action.payload;
 
-        // Просто обновляем сообщения с сервера
+        // Всегда обновляем сообщения с сервера для общего чата
         state.messages = messages;
         state.lastMessageCount = messages.length;
         state.lastUpdateTime = timestamp;
 
-        // Сохраняем в localStorage
+        // Сохраняем в localStorage для офлайн режима
         storage.setChatMessages(messages);
 
         state.isLoading = false;
@@ -111,13 +111,21 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.isSendingMessages = false;
-        state.error = null;
         
-        // Добавляем сообщение сразу для мгновенного отображения
+        // Временно добавляем сообщение локально для мгновенного отображения
         if (action.payload.chat) {
-          state.messages.push(action.payload.chat);
-          storage.setChatMessages(state.messages);
+          // Проверяем, нет ли уже такого сообщения (избегаем дублирования)
+          const messageExists = state.messages.some(
+            msg => msg.id === action.payload.chat?.id
+          );
+          
+          if (!messageExists) {
+            state.messages.push(action.payload.chat);
+            storage.setChatMessages(state.messages);
+          }
         }
+        
+        state.error = null;
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.isSendingMessages = false;
