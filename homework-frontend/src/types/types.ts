@@ -4,10 +4,10 @@ export type User = {
 };
 
 export type Message = {
+  id: number;
   username: string;
   body: string;
   timestamp: string;
-  id?: number;
 };
 
 export type AuthState = {

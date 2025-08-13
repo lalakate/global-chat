@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import { storage } from '../../services/storage';
 
 const initialState: ChatState = {
-  messages: storage.getChatMessages(), // Загружаем из localStorage как fallback до получения данных с сервера
+  messages: [], // Начинаем с пустого массива, данные загрузим с сервера
   isLoading: false,
   isInitialLoading: true,
   isSendingMessages: false,
@@ -82,12 +82,12 @@ const chatSlice = createSlice({
       .addCase(fetchMessages.fulfilled, (state, action) => {
         const { messages, timestamp } = action.payload;
 
-        // Всегда обновляем сообщения с сервера
+        // Просто обновляем сообщения с сервера
         state.messages = messages;
         state.lastMessageCount = messages.length;
         state.lastUpdateTime = timestamp;
 
-        // Сохраняем в localStorage для офлайн режима
+        // Сохраняем в localStorage
         storage.setChatMessages(messages);
 
         state.isLoading = false;
@@ -111,24 +111,13 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.isSendingMessages = false;
-        
-        // Временно добавляем сообщение для мгновенного feedback'а
-        if (action.payload.chat) {
-          // Проверяем, нет ли уже этого сообщения
-          const exists = state.messages.find(
-            msg =>
-              msg.timestamp === action.payload.chat?.timestamp &&
-              msg.body === action.payload.chat?.body &&
-              msg.username === action.payload.chat?.username
-          );
-          
-          if (!exists) {
-            state.messages.push(action.payload.chat);
-            storage.setChatMessages(state.messages);
-          }
-        }
-        
         state.error = null;
+        
+        // Добавляем сообщение сразу для мгновенного отображения
+        if (action.payload.chat) {
+          state.messages.push(action.payload.chat);
+          storage.setChatMessages(state.messages);
+        }
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.isSendingMessages = false;

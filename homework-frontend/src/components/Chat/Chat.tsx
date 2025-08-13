@@ -15,10 +15,10 @@ export const Chat = () => {
       // Загружаем сообщения при входе
       dispatch(fetchMessages(false));
 
-      // Периодически обновляем сообщения каждые 3 секунды для синхронизации
+      // Периодически обновляем сообщения каждую секунду для быстрой синхронизации
       const interval = setInterval(() => {
         dispatch(fetchMessages(true)); // silent mode чтобы не показывать загрузку
-      }, 3000);
+      }, 1000);
 
       return () => clearInterval(interval);
     }

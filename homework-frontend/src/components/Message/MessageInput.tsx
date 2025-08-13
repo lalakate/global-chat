@@ -30,10 +30,8 @@ export const MessageInput = () => {
         await dispatch(sendMessage(message)).unwrap();
         setMessage('');
 
-        // Даем серверу время сохранить сообщение, затем обновляем
-        setTimeout(() => {
-          dispatch(fetchMessages(true));
-        }, 500);
+        // Сразу обновляем сообщения с сервера после отправки
+        dispatch(fetchMessages(true));
 
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -84,7 +82,11 @@ export const MessageInput = () => {
             !message.trim() || message.trim().length === 0 || isSendingMessages
           }
         >
-          {isSendingMessages ? '...' : '➤'}
+          {isSendingMessages ? (
+            <span className="sending-indicator">📤</span>
+          ) : (
+            '➤'
+          )}
         </Button>
       </div>
 
