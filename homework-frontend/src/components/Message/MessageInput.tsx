@@ -30,10 +30,8 @@ export const MessageInput = () => {
         await dispatch(sendMessage(message)).unwrap();
         setMessage('');
 
-        // Принудительно обновляем сообщения после отправки
-        setTimeout(() => {
-          dispatch(fetchMessages(false)); // Используем false для видимой загрузки
-        }, 100);
+        // Сразу обновляем сообщения с сервера после отправки
+        dispatch(fetchMessages(true));
 
         if (textareaRef.current) {
           textareaRef.current.focus();

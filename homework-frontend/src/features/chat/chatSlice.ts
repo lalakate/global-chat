@@ -82,23 +82,13 @@ const chatSlice = createSlice({
       .addCase(fetchMessages.fulfilled, (state, action) => {
         const { messages, timestamp } = action.payload;
 
-        // Обновляем сообщения с сервера, но учитываем возможные локальные изменения
-        // Если количество сообщений с сервера больше или равно локальным - обновляем полностью
-        if (
-          messages.length >= state.messages.length ||
-          state.isInitialLoading
-        ) {
-          state.messages = messages;
-        } else {
-          // Если локально больше сообщений (только что отправили), сохраняем локальные
-          // и ждем следующего обновления
-        }
-        
+        // Всегда обновляем сообщения с сервера
+        state.messages = messages;
         state.lastMessageCount = messages.length;
         state.lastUpdateTime = timestamp;
 
         // Сохраняем в localStorage для офлайн режима
-        storage.setChatMessages(state.messages);
+        storage.setChatMessages(messages);
 
         state.isLoading = false;
         state.isInitialLoading = false;
@@ -119,22 +109,10 @@ const chatSlice = createSlice({
         state.isSendingMessages = true;
         state.error = null;
       })
-      .addCase(sendMessage.fulfilled, (state, action) => {
+      .addCase(sendMessage.fulfilled, (state, _action) => {
         state.isSendingMessages = false;
-        
-        // Временно добавляем сообщение локально для мгновенного отображения
-        if (action.payload.chat) {
-          // Проверяем, нет ли уже такого сообщения (избегаем дублирования)
-          const messageExists = state.messages.some(
-            msg => msg.id === action.payload.chat?.id
-          );
-          
-          if (!messageExists) {
-            state.messages.push(action.payload.chat);
-            storage.setChatMessages(state.messages);
-          }
-        }
-        
+        // НЕ добавляем сообщение локально - ждем обновления с сервера
+        // Это обеспечивает синхронизацию между всеми устройствами
         state.error = null;
       })
       .addCase(sendMessage.rejected, (state, action) => {
